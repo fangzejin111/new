@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>照片墙 | 土鸡蛋</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
+    <style>
+        /* 照片墙页面特有样式 */
+        .photos-hero {
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 142, 83, 0.1));
+            padding: 100px 0 60px;
+            margin-top: 70px;
+            text-align: center;
+            border-radius: 0 0 var(--border-radius-lg) var(--border-radius-lg);
+        }
+        
+        .photos-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+        
+        .upload-section {
+            max-width: 800px;
+            margin: 40px auto;
+            text-align: center;
+        }
+        
+        .upload-box {
+            background: var(--card-bg);
+            border: 3px dashed var(--primary-light);
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        .upload-box:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .upload-box i {
+            font-size: 3rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .upload-box p {
+            color: var(--text-light);
+            margin-bottom: 20px;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: var(--border-radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-block;
+            transition: all var(--transition-fast);
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .photos-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .photos-filter {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 2px solid var(--primary-light);
+            padding: 10px 20px;
+            border-radius: var(--border-radius-md);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .photo-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-medium);
+            transition: all var(--transition-normal);
+            cursor: pointer;
+        }
+        
+        .photo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-heavy);
+        }
+        
+        .photo-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+        
+        .photo-info {
+            padding: 20px;
+        }
+        
+        .photo-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+        
+        .photo-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .photo-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .like-btn {
+            background: #ffebee;
+            color: #e74c3c;
+        }
+        
+        .like-btn:hover {
+            background: #ffcdd2;
+        }
+        
+        .like-btn.liked {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .share-btn {
+            background: #e8f4fc;
+            color: #3498db;
+        }
+        
+        .share-btn:hover {
+            background: #d6eaf8;
+        }
+        
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+        
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: var(--border-radius-md);
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            transform: translateY(-50%);
+        }
+        
+        .lightbox-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+        }
+        
+        .lightbox-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .no-photos {
+            text-align: center;
+            padding: 60px;
+            color: var(--text-light);
+            font-size: 1.2rem;
+            grid-column: 1 / -1;
+        }
+        
+        @media (max-width: 768px) {
+            .photos-hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .photos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .photos-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .photos-filter {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filter-btn {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-heart"></i> 元旦快乐
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html"><i class="fas fa-home"></i> 主页</a></li>
+                <li><a href="moments.html"><i class="fas fa-heart"></i> 特别回忆</a></li>
+                <li><a href="photos.html"><i class="fas fa-images"></i> 照片墙</a></li>
+                <li><a href="countdown.html"><i class="fas fa-calendar-alt"></i> 重要日子</a></li>
+                <li><a href="surprise.html"><i class="fas fa-gift"></i> 小惊喜</a></li>
+            </ul>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 浮动爱心背景 -->
+    <div class="floating-hearts" id="hearts-container"></div>
+
+    <!-- 主内容 -->
+    <div class="container">
+        <!-- 英雄区域 -->
+        <section class="photos-hero">
+            <h1><i class="fas fa-images"></i> 我们的照片墙</h1>
+            <p class="hero-subtitle">珍藏每一个美好瞬间</p>
+        </section>
+
+        <!-- 上传区域 -->
+        <div class="upload-section">
+            <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>点击这里上传照片（模拟功能）</p>
+                <p style="font-size: 0.9rem; color: var(--text-lighter);">
+                    支持 JPG、PNG 格式，最大 5MB
+                </p>
+                <div class="upload-btn">选择照片</div>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" multiple hidden onchange="handleFileUpload(event)">
+        </div>
+
+        <!-- 照片筛选 -->
+        <div class="photos-container">
+            <div class="photos-filter">
+                <button class="filter-btn active" data-filter="all">全部照片</button>
+                <button class="filter-btn" data-filter="favorite">最喜爱</button>
+                <button class="filter-btn" data-filter="recent">最近添加</button>
+                <button class="filter-btn" data-filter="oldest">最早添加</button>
+            </div>
+
+            <!-- 照片网格 -->
+            <div class="photos-grid" id="photosGrid">
+                <!-- 照片会通过JavaScript动态加载 -->
+                <div class="no-photos">
+                    <i class="fas fa-camera" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                    <p>还没有照片，点击上方上传区域添加照片吧！</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 灯箱（查看大图） -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="lightbox-nav">
+            <button class="lightbox-btn" onclick="prevPhoto()">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="lightbox-btn" onclick="nextPhoto()">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="lightbox-content">
+            <img class="lightbox-img" id="lightboxImg" src="" alt="">
+            <div id="lightboxInfo" style="color: white; text-align: center; margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-images"></i> 关于照片墙</h3>
+                <p>这是一个虚拟的照片墙，上传的照片保存在浏览器本地。</p>
+                <p>记得定期备份重要照片哦！</p>
+            </div>
+            <div class="footer-section">
+                <h3><i class="fas fa-link"></i> 快速链接</h3>
+                <div class="footer-links">
+                    <a href="index.html"><i class="fas fa-home"></i> 主页</a>
+                    <a href="moments.html"><i class="fas fa-heart"></i> 回忆</a>
+                    <a href="countdown.html"><i class="fas fa-calendar"></i> 倒计时</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3><i class="fas fa-info-circle"></i> 照片管理</h3>
+                <p>照片保存在浏览器本地存储中。</p>
+                <p>更换设备或清除缓存会导致照片丢失。</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2024 元旦特别版 | 专为 <span class="highlight-name">土鸡蛋</span> 制作</p>
+            <p class="footer-note">
+                <i class="fas fa-heart"></i> 用照片记录美好时光 <i class="fas fa-heart"></i>
+            </p>
+        </div>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 加载脚本 -->
+    <script src="js/main.js"></script>
+    <script>
+        // 照片墙页面特有功能
+        let currentPhotos = [];
+        let currentFilter = 'all';
+        let currentLightboxIndex = 0;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载已有照片
+            loadPhotos();
+            
+            // 初始化筛选按钮
+            initFilterButtons();
+            
+            // 初始化返回顶部按钮
+            initBackToTop();
+            
+            // 初始化浮动爱心
+            initFloatingHearts();
+        });
+        
+        // 加载照片
+        function loadPhotos() {
+            currentPhotos = JSON.parse(localStorage.getItem('photos')) || [];
+            filterPhotos(currentFilter);
+        }
+        
+        // 初始化筛选按钮
+        function initFilterButtons() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 更新按钮状态
+                    document.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // 筛选照片
+                    currentFilter = this.getAttribute('data-filter');
+                    filterPhotos(currentFilter);
+                });
+            });
+        }
+        
+        // 筛选照片
+        function filterPhotos(filter) {
+            let filteredPhotos = [...currentPhotos];
+            
+            switch(filter) {
+                case 'favorite':
+                    filteredPhotos = filteredPhotos.filter(photo => photo.liked);
+                    break;
+                case 'recent':
+                    filteredPhotos.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    break;
+                case 'oldest':
+                    filteredPhotos.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    break;
+                case 'all':
+                default:
+                    filteredPhotos.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    break;
+            }
+            
+            renderPhotos(filteredPhotos);
+        }
+        
+        // 渲染照片
+        function renderPhotos(photos) {
+            const photosGrid = document.getElementById('photosGrid');
+            
+            if (photos.length === 0) {
+                photosGrid.innerHTML = `
+                    <div class="no-photos">
+                        <i class="fas fa-camera" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                        <p>还没有照片，点击上方上传区域添加照片吧！</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            photosGrid.innerHTML = '';
+            
+            photos.forEach((photo, index) => {
+                const photoCard = document.createElement('div');
+                photoCard.className = 'photo-card';
+                photoCard.setAttribute('data-index', index);
+                
+                // 生成随机背景色
+                const colors = [
+                    'linear-gradient(135deg, #FF6B8B, #FF8E53)',
+                    'linear-gradient(135deg, #4ECDC4, #44A08D)',
+                    'linear-gradient(135deg, #9C88FF, #8C7AE6)',
+                    'linear-gradient(135deg, #3498DB, #2980B9)',
+                    'linear-gradient(135deg, #2ECC71, #27AE60)'
+                ];
+                const bgColor = colors[index % colors.length];
+                
+                photoCard.innerHTML = `
+                    <div class="photo-img" style="background: ${bgColor};">
+                        ${photo.dataUrl ? 
+                            `<img src="${photo.dataUrl}" alt="${photo.title}" style="width: 100%; height: 100%; object-fit: cover;">` : 
+                            `<i class="fas fa-image"></i>`
+                        }
+                    </div>
+                    <div class="photo-info">
+                        <div class="photo-title">${photo.title || '未命名照片'}</div>
+                        <div class="photo-date">
+                            <i class="far fa-calendar"></i> ${photo.date}
+                        </div>
+                        <div class="photo-actions">
+                            <button class="action-btn like-btn ${photo.liked ? 'liked' : ''}" 
+                                    onclick="toggleLike(${index})">
+                                <i class="fas fa-heart"></i>
+                                <span>${photo.likes || 0}</span>
+                            </button>
+                            <button class="action-btn share-btn" onclick="sharePhoto(${index})">
+                                <i class="fas fa-share-alt"></i>
+                                <span>分享</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // 点击查看大图
+                photoCard.addEventListener('click', (e) => {
+                    if (!e.target.closest('.photo-actions')) {
+                        openLightbox(index);
+                    }
+                });
+                
+                photosGrid.appendChild(photoCard);
+            });
+        }
+        
+        // 处理文件上传
+        function handleFileUpload(event) {
+            const files = event.target.files;
+            
+            if (!files || files.length === 0) return;
+            
+            Array.from(files).forEach((file, index) => {
+                if (!file.type.match('image.*')) {
+                    showNotification('只能上传图片文件！');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) { // 5MB限制
+                    showNotification('文件大小不能超过5MB！');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const photo = {
+                        id: Date.now() + index,
+                        title: file.name.replace(/\.[^/.]+$/, ""), // 去掉扩展名
+                        date: new Date().toISOString().split('T')[0],
+                        dataUrl: e.target.result,
+                        likes: 0,
+                        liked: false
+                    };
+                    
+                    // 添加到照片列表
+                    currentPhotos.unshift(photo);
+                    localStorage.setItem('photos', JSON.stringify(currentPhotos));
+                    
+                    // 重新加载照片
+                    filterPhotos(currentFilter);
+                    
+                    // 显示通知
+                    showNotification(`"${photo.title}" 上传成功！`);
+                };
+                
+                reader.readAsDataURL(file);
+            });
+            
+            // 重置文件输入
+            event.target.value = '';
+        }
+        
+        // 切换喜欢状态
+        function toggleLike(index) {
+            const photos = JSON.parse(localStorage.getItem('photos')) || [];
+            
+            if (index >= 0 && index < photos.length) {
+                photos[index].liked = !photos[index].liked;
+                photos[index].likes = photos[index].liked ? 
+                    (photos[index].likes || 0) + 1 : 
+                    Math.max(0, (photos[index].likes || 1) - 1);
+                
+                localStorage.setItem('photos', JSON.stringify(photos));
+                loadPhotos();
+            }
+        }
+        
+        // 分享照片
+        function sharePhoto(index) {
+            const photos = JSON.parse(localStorage.getItem('photos')) || [];
+            
+            if (index >= 0 && index < photos.length) {
+                const photo = photos[index];
+                const shareText = `分享一张照片：${photo.title}`;
+                
+                if (navigator.share) {
+                    navigator.share({
+                        title: photo.title,
+                        text: shareText,
+                        url: window.location.href
+                    }).then(() => {
+                        showNotification('分享成功！');
+                    }).catch(err => {
+                        console.log('分享失败:', err);
+                        copyToClipboard(shareText);
+                    });
+                } else {
+                    copyToClipboard(shareText);
+                }
+            }
+        }
+        
+        // 复制到剪贴板
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('分享链接已复制到剪贴板！');
+            }).catch(err => {
+                console.log('复制失败:', err);
+                showNotification('分享失败，请手动复制');
+            });
+        }
+        
+        // 打开灯箱
+        function openLightbox(index) {
+            const photos = JSON.parse(localStorage.getItem('photos')) || [];
+            
+            if (index >= 0 && index < photos.length) {
+                const photo = photos[index];
+                const lightbox = document.getElementById('lightbox');
+                const lightboxImg = document.getElementById('lightboxImg');
+                const lightboxInfo = document.getElementById('lightboxInfo');
+                
+                currentLightboxIndex = index;
+                lightboxImg.src = photo.dataUrl;
+                lightboxImg.alt = photo.title;
+                lightboxInfo.innerHTML = `
+                    <h3>${photo.title}</h3>
+                    <p>上传日期：${photo.date}</p>
+                    <p>❤️ ${photo.likes || 0} 次喜欢</p>
+                `;
+                
+                lightbox.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        // 关闭灯箱
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // 上一张照片
+        function prevPhoto() {
+            const photos = JSON.parse(localStorage.getItem('photos')) || [];
+            currentLightboxIndex = (currentLightboxIndex - 1 + photos.length) % photos.length;
+            openLightbox(currentLightboxIndex);
+        }
+        
+        // 下一张照片
+        function nextPhoto() {
+            const photos = JSON.parse(localStorage.getItem('photos')) || [];
+            currentLightboxIndex = (currentLightboxIndex + 1) % photos.length;
+            openLightbox(currentLightboxIndex);
+        }
+        
+        // 键盘控制
+        document.addEventListener('keydown', function(e) {
+            const lightbox = document.getElementById('lightbox');
+            
+            if (lightbox.classList.contains('active')) {
+                switch(e.key) {
+                    case 'Escape':
+                        closeLightbox();
+                        break;
+                    case 'ArrowLeft':
+                        prevPhoto();
+                        break;
+                    case 'ArrowRight':
+                        nextPhoto();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
