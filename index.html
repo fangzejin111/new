@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>元旦快乐 | 致土鸡蛋</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.92);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px dashed #ff6b81;
+            position: relative;
+        }
+
+        .header h1 {
+            color: #ff4757;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header p {
+            color: #57606f;
+            font-size: 1.2rem;
+            font-style: italic;
+        }
+
+        .heart-icon {
+            color: #ff4757;
+            font-size: 3rem;
+            margin: 0 10px;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .name-highlight {
+            color: #ff4757;
+            font-weight: bold;
+            font-size: 1.4em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            padding: 0 5px;
+            background-color: #ffeaa7;
+            border-radius: 5px;
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .message-box {
+            background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .message-box:hover {
+            transform: translateY(-5px);
+        }
+
+        .message-box h2 {
+            color: #e17055;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message-box p {
+            color: #2d3436;
+            line-height: 1.7;
+            font-size: 1.1rem;
+            text-align: justify;
+        }
+
+        .message-box .quote {
+            font-style: italic;
+            text-align: center;
+            margin-top: 15px;
+            padding: 10px;
+            border-left: 4px solid #ff7675;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .new-year-countdown {
+            background: linear-gradient(to right, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .new-year-countdown h2 {
+            color: #00b894;
+            margin-bottom: 20px;
+        }
+
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .countdown-item {
+            background-color: white;
+            padding: 15px 10px;
+            border-radius: 10px;
+            min-width: 80px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .countdown-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00b894;
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            color: #636e72;
+            margin-top: 5px;
+        }
+
+        .love-message {
+            background: linear-gradient(to right, #ff9a9e 0%, #fecfef 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .love-message h2 {
+            color: #fd79a8;
+            margin-bottom: 15px;
+        }
+
+        .love-message p {
+            color: #2d3436;
+            line-height: 1.7;
+            font-size: 1.1rem;
+        }
+
+        .signature {
+            text-align: right;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px dashed #ff7675;
+            font-size: 1.2rem;
+            color: #ff6b81;
+            font-style: italic;
+        }
+
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .heart {
+            position: absolute;
+            color: rgba(255, 107, 129, 0.6);
+            font-size: 20px;
+            animation: float 5s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .countdown-container {
+                gap: 10px;
+            }
+            
+            .countdown-item {
+                min-width: 70px;
+                padding: 12px 8px;
+            }
+            
+            .countdown-value {
+                font-size: 1.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .heart-icon {
+                font-size: 2.5rem;
+            }
+            
+            .countdown-container {
+                gap: 5px;
+            }
+            
+            .countdown-item {
+                min-width: 60px;
+                padding: 10px 5px;
+            }
+            
+            .countdown-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-hearts" id="hearts-container"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>元旦快乐 <i class="fas fa-heart heart-icon"></i> 致<span class="name-highlight">土鸡蛋</span></h1>
+            <p>新的一年，我的心中只有你</p>
+        </div>
+        
+        <div class="content">
+            <div class="message-box">
+                <h2><i class="fas fa-calendar-alt"></i> 元旦的祝福</h2>
+                <p>亲爱的<span class="name-highlight">土鸡蛋</span>，新的一年已经到来。在这个特殊的日子里，我想对你说：元旦快乐！愿新的一年带给你无尽的欢乐、健康和成功。</p>
+                <p>过去的日子里，你的存在让我的世界变得更加美好。你的笑容像阳光一样温暖，你的善良让我感受到世界的美好。新的一年，我希望可以继续陪伴在你身边，分享你的喜怒哀乐。</p>
+                <div class="quote">"遇见你，是我这一生最美丽的意外。爱上你，是我最无悔的选择。"</div>
+            </div>
+            
+            <div class="new-year-countdown">
+                <h2><i class="fas fa-clock"></i> 我们的新年倒计时</h2>
+                <div class="countdown-container">
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="days">0</div>
+                        <div class="countdown-label">天</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="hours">0</div>
+                        <div class="countdown-label">小时</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="minutes">0</div>
+                        <div class="countdown-label">分钟</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-value" id="seconds">0</div>
+                        <div class="countdown-label">秒</div>
+                    </div>
+                </div>
+                <p style="margin-top: 15px; color: #636e72;">每一秒，我都在想你</p>
+            </div>
+            
+            <div class="love-message">
+                <h2><i class="fas fa-heart"></i> 致土鸡蛋的心里话</h2>
+                <p>亲爱的<span class="name-highlight">土鸡蛋</span>，这个昵称虽然有趣，但在我心中，它代表着最特别的你。就像土鸡蛋比普通鸡蛋更有营养一样，你比任何人都更珍贵。</p>
+                <p>新的一年，我想让你知道：</p>
+                <p>我喜欢你的笑容，喜欢你说话的样子，喜欢你的善良和真诚。你就像一道光，照亮了我的生活。无论未来怎样，我都希望能在你身边，陪你度过每一个元旦，每一个节日，每一个平凡的日子。</p>
+                <p>愿我们的故事，从这个元旦开始，写下更美好的篇章。</p>
+            </div>
+            
+            <div class="signature">
+                <p>永远爱你的人</p>
+                <p id="current-date"></p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>这个网页专为土鸡蛋制作 | 元旦表白网页</p>
+            <p>❤️ 爱意永不褪色 ❤️</p>
+        </div>
+    </div>
+
+    <script>
+        // 创建浮动爱心
+        function createHearts() {
+            const container = document.getElementById('hearts-container');
+            const heartCount = 20;
+            
+            for (let i = 0; i < heartCount; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤';
+                
+                // 随机位置
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = Math.random() * 100 + 'vh';
+                
+                // 随机大小
+                const size = Math.random() * 20 + 10;
+                heart.style.fontSize = size + 'px';
+                
+                // 随机动画延迟
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                
+                container.appendChild(heart);
+            }
+        }
+        
+        // 新年倒计时
+        function updateCountdown() {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const nextYear = currentYear + 1;
+            const newYear = new Date(`January 1, ${nextYear} 00:00:00`);
+            
+            const diff = newYear - now;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+        }
+        
+        // 显示当前日期
+        function showCurrentDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            const dateString = now.toLocaleDateString('zh-CN', options);
+            document.getElementById('current-date').textContent = dateString;
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createHearts();
+            showCurrentDate();
+            updateCountdown();
+            
+            // 每秒更新倒计时
+            setInterval(updateCountdown, 1000);
+            
+            // 添加点击效果 - 点击页面任意处出现爱心
+            document.body.addEventListener('click', function(e) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤';
+                heart.style.position = 'fixed';
+                heart.style.left = e.clientX + 'px';
+                heart.style.top = e.clientY + 'px';
+                heart.style.fontSize = '25px';
+                heart.style.color = '#ff4757';
+                heart.style.pointerEvents = 'none';
+                heart.style.zIndex = '9999';
+                heart.style.animation = 'float 1.5s ease-out forwards';
+                
+                document.body.appendChild(heart);
+                
+                // 1.5秒后移除爱心
+                setTimeout(() => {
+                    heart.remove();
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>
