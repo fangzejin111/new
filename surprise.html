@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>惊喜时刻 | 土鸡蛋</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
+    <style>
+        /* 惊喜页面特有样式 */
+        :root {
+            --surprise-pink: #ff6b8b;
+            --surprise-orange: #ff8e53;
+            --surprise-purple: #9c88ff;
+            --surprise-blue: #3498db;
+            --surprise-green: #2ecc71;
+        }
+        
+        .surprise-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, 
+                rgba(255, 107, 139, 0.08) 0%, 
+                rgba(255, 142, 83, 0.08) 25%, 
+                rgba(156, 136, 255, 0.08) 50%, 
+                rgba(52, 152, 219, 0.08) 75%, 
+                rgba(46, 204, 113, 0.08) 100%);
+            padding-top: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 魔法粒子背景 */
+        .magic-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--surprise-pink);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatParticle 15s infinite linear;
+        }
+        
+        .particle:nth-child(2n) {
+            background: var(--surprise-orange);
+        }
+        
+        .particle:nth-child(3n) {
+            background: var(--surprise-purple);
+        }
+        
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        /* 页面头部 */
+        .surprise-header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .surprise-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, 
+                var(--surprise-pink), 
+                var(--surprise-orange),
+                var(--surprise-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+        }
+        
+        .surprise-title::after {
+            content: '✨';
+            position: absolute;
+            top: -15px;
+            right: -40px;
+            font-size: 2rem;
+            animation: sparkle 2s infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.7; transform: scale(1) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.2) rotate(10deg); }
+        }
+        
+        .surprise-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        /* 惊喜卡片容器 */
+        .surprise-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* 惊喜卡片网格 */
+        .surprise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .surprise-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-heavy);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all var(--transition-normal);
+            cursor: pointer;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .surprise-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-color);
+        }
+        
+        .surprise-card.revealed {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--card-bg) 100%);
+        }
+        
+        .card-number {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            transition: all var(--transition-normal);
+        }
+        
+        .surprise-card:hover .card-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+        
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .card-hint {
+            color: var(--text-light);
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            font-style: italic;
+        }
+        
+        .card-content {
+            color: var(--text-color);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 1.1rem;
+        }
+        
+        .reveal-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .reveal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .reveal-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* 主要表白区域 */
+        .main-confession {
+            background: linear-gradient(135deg, 
+                var(--surprise-pink), 
+                var(--surprise-orange));
+            color: white;
+            border-radius: var(--border-radius-lg);
+            padding: 60px 40px;
+            text-align: center;
+            margin: 60px auto;
+            max-width: 800px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(255, 107, 139, 0.3);
+            animation: pulseBackground 4s infinite alternate;
+        }
+        
+        @keyframes pulseBackground {
+            0% { background: linear-gradient(135deg, var(--surprise-pink), var(--surprise-orange)); }
+            100% { background: linear-gradient(135deg, var(--surprise-purple), var(--surprise-blue)); }
+        }
+        
+        .main-confession::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.1)" d="M0,0 L100,0 L100,100 Z"/></svg>');
+            background-size: cover;
+        }
+        
+        .confession-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .confession-text {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin: 30px 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+            line-height: 1.4;
+            animation: heartbeat 1.5s infinite;
+        }
+        
+        .confession-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            line-height: 1.6;
+        }
+        
+        /* 时间胶囊 */
+        .time-capsule {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            margin: 60px auto;
+            max-width: 800px;
+            box-shadow: var(--shadow-heavy);
+            text-align: center;
+            border: 3px solid var(--primary-light);
+            position: relative;
+        }
+        
+        .capsule-title {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .capsule-content {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            line-height: 1.8;
+            margin-bottom: 30px;
+            text-align: left;
+            background: var(--primary-light);
+            padding: 25px;
+            border-radius: var(--border-radius-md);
+        }
+        
+        .open-capsule-btn {
+            background: linear-gradient(135deg, var(--surprise-green), #27ae60);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .open-capsule-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(46, 204, 113, 0.3);
+        }
+        
+        /* 隐藏的彩蛋 */
+        .hidden-egg {
+            text-align: center;
+            margin: 60px auto;
+            opacity: 0.7;
+            transition: opacity var(--transition-normal);
+        }
+        
+        .hidden-egg:hover {
+            opacity: 1;
+        }
+        
+        .egg-hint {
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
+        .egg-button {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: color var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 0 auto;
+        }
+        
+        .egg-button:hover {
+            color: var(--primary-color);
+        }
+        
+        .egg-content {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--primary-light);
+            border-radius: var(--border-radius-md);
+            color: var(--text-color);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .surprise-title {
+                font-size: 2.8rem;
+            }
+            
+            .surprise-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .surprise-title {
+                font-size: 2.2rem;
+            }
+            
+            .surprise-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .surprise-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .confession-text {
+                font-size: 2rem;
+            }
+            
+            .confession-title {
+                font-size: 2rem;
+            }
+            
+            .main-confession {
+                padding: 40px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .surprise-title {
+                font-size: 1.8rem;
+            }
+            
+            .surprise-card {
+                padding: 20px;
+            }
+            
+            .confession-text {
+                font-size: 1.6rem;
+            }
+            
+            .card-title {
+                font-size: 1.5rem;
+            }
+        }
+        
+        /* 动画效果 */
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .slide-up {
+            animation: slideUp 0.8s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <i class="fas fa-heart"></i> 元旦快乐
+            </a>
+            <ul class="nav-menu">
+                <li><a href="index.html"><i class="fas fa-home"></i> 主页</a></li>
+                <li><a href="moments.html"><i class="fas fa-heart"></i> 特别回忆</a></li>
+                <li><a href="photos.html"><i class="fas fa-images"></i> 照片墙</a></li>
+                <li><a href="countdown.html"><i class="fas fa-calendar-alt"></i> 重要日子</a></li>
+                <li><a href="surprise.html"><i class="fas fa-gift"></i> 小惊喜</a></li>
+            </ul>
+            <div class="hamburger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 魔法粒子背景 -->
+    <div class="magic-particles" id="magicParticles"></div>
+
+    <!-- 惊喜页面内容 -->
+    <div class="surprise-page">
+        <!-- 页面头部 -->
+        <header class="surprise-header">
+            <h1 class="surprise-title slide-up">✨ 惊喜时刻 ✨</h1>
+            <p class="surprise-subtitle">
+                为你准备的特别惊喜，每一份都藏着我的心意<br>
+                慢慢探索，发现每一份惊喜吧！
+            </p>
+            <div style="margin-top: 20px;">
+                <button class="reveal-btn" onclick="revealAllSurprises()">
+                    <i class="fas fa-bolt"></i> 一键揭开所有惊喜
+                </button>
+            </div>
+        </header>
+
+        <!-- 惊喜卡片网格 -->
+        <div class="surprise-container">
+            <div class="surprise-grid">
+                <!-- 惊喜1 -->
+                <div class="surprise-card" data-index="1">
+                    <div class="card-number">1</div>
+                    <div class="card-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="card-title">第一个惊喜</h3>
+                    <p class="card-hint">点击揭开这个惊喜</p>
+                    <div class="card-content" id="surprise1">
+                        <p>想对你说：你是我生命中最美丽的意外，也是最珍贵的礼物。</p>
+                        <p>每次想到你，心里都暖暖的，就像冬天里的阳光。</p>
+                        <div style="margin-top: 20px; padding: 15px; background: rgba(255, 255, 255, 0.2); border-radius: 10px;">
+                            <i class="fas fa-quote-left" style="color: var(--surprise-pink);"></i>
+                            <strong style="color: var(--surprise-pink);">你让我的世界变得完整</strong>
+                            <i class="fas fa-quote-right" style="color: var(--surprise-pink);"></i>
+                        </div>
+                    </div>
+                    <button class="reveal-btn" onclick="revealSurprise(1)">
+                        <i class="fas fa-lock-open"></i> 揭开惊喜
+                    </button>
+                </div>
+
+                <!-- 惊喜2 -->
+                <div class="surprise-card" data-index="2">
+                    <div class="card-number">2</div>
+                    <div class="card-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3 class="card-title">特别的回忆</h3>
+                    <p class="card-hint">这里藏着我们的美好时光</p>
+                    <div class="card-content" id="surprise2">
+                        <p>还记得我们第一次聊天的情景吗？</p>
+                        <p>虽然可能只是普通的对话，但对我来说却是特别的一天。</p>
+                        <p>每一次的交流，每一个微笑，都让我的生活更加精彩。</p>
+                        <div style="margin-top: 15px; font-size: 0.9rem; color: var(--text-light);">
+                            <i class="far fa-clock"></i> 这些瞬间，我会永远珍藏
+                        </div>
+                    </div>
+                    <button class="reveal-btn" onclick="revealSurprise(2)">
+                        <i class="fas fa-lock-open"></i> 查看回忆
+                    </button>
+                </div>
+
+                <!-- 惊喜3 -->
+                <div class="surprise-card" data-index="3">
+                    <div class="card-number">3</div>
+                    <div class="card-icon">
+                        <i class="fas fa-music"></i>
+                    </div>
+                    <h3 class="card-title">专属音乐</h3>
+                    <p class="card-hint">为你挑选的特别旋律</p>
+                    <div class="card-content" id="surprise3">
+                        <p>如果此刻有背景音乐，我想会是温柔而甜蜜的旋律。</p>
+                        <div style="margin: 20px 0;">
+                            <button class="music-btn" onclick="playSurpriseMusic()" style="background: var(--surprise-purple);">
+                                <i class="fas fa-play"></i> 播放惊喜音乐
+                            </button>
+                        </div>
+                        <p><small>虽然这只是一个象征，但我的心意是真实的。</small></p>
+                    </div>
+                    <button class="reveal-btn" onclick="revealSurprise(3)">
+                        <i class="fas fa-lock-open"></i> 聆听音乐
+                    </button>
+                </div>
+
+                <!-- 惊喜4 -->
+                <div class="surprise-card" data-index="4">
+                    <div class="card-number">4</div>
+                    <div class="card-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <h3 class="card-title">未来约定</h3>
+                    <p class="card-hint">关于我们的小小约定</p>
+                    <div class="card-content" id="surprise4">
+                        <p>希望未来有机会：</p>
+                        <ul style="text-align: left; margin: 15px 0; padding-left: 20px;">
+                            <li>一起看一次日出或日落</li>
+                            <li>分享生活中的点滴快乐</li>
+                            <li>创造更多美好的回忆</li>
+                            <li>成为彼此生命中的特别存在</li>
+                        </ul>
+                        <p>这些小小的愿望，都是为你而许下的。</p>
+                    </div>
+                    <button class="reveal-btn" onclick="revealSurprise(4)">
+                        <i class="fas fa-lock-open"></i> 查看约定
+                    </button>
+                </div>
+            </div>
+
+            <!-- 主要表白区域 -->
+            <div class="main-confession slide-up">
+                <h2 class="confession-title">最重要的一句话</h2>
+                <div class="confession-text">
+                    喜欢你，王雅尼<br>
+                    <span style="font-size: 1.5rem; display: block; margin-top: 10px;">💖 土鸡蛋 💖</span>
+                </div>
+                <p class="confession-subtitle">
+                    这不是一句简单的告白<br>
+                    而是我内心深处最真实的感受<br>
+                    希望在未来的日子里，我们能一起创造更多美好的回忆
+                </p>
+                <div style="margin-top: 30px;">
+                    <button class="reveal-btn" onclick="showExtraConfession()" style="background: rgba(255, 255, 255, 0.2); border: 2px solid white;">
+                        <i class="fas fa-plus-circle"></i> 查看更多心里话
+                    </button>
+                </div>
+                <div id="extraConfession" style="display: none; margin-top: 30px; animation: fadeIn 0.5s ease;">
+                    <p style="font-size: 1.2rem; line-height: 1.6; opacity: 0.9;">
+                        王雅尼，你的名字在我心中有着特别的份量。<br>
+                        就像"土鸡蛋"这个可爱的昵称一样，<br>
+                        你在我眼中是独特而珍贵的存在。<br>
+                        愿这份心意能带给你一丝温暖和快乐。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 时间胶囊 -->
+            <div class="time-capsule slide-up">
+                <h2 class="capsule-title">
+                    <i class="fas fa-time-capsule"></i> 给未来的时间胶囊
+                </h2>
+                <div class="capsule-content" id="capsuleContent">
+                    <p><strong>致未来的我们：</strong></p>
+                    <p>如果未来的某一天，你再次打开这个页面，我想对你说：</p>
+                    <p>无论时间过去了多久，无论我们身在何处，此刻的这份心意永远不会改变。</p>
+                    <p>希望那时的你，依然像现在一样快乐、善良、充满魅力。</p>
+                    <p>也愿我们的友谊（或更多）能够随着时间的推移而变得更加深厚。</p>
+                    <p style="text-align: right; margin-top: 20px;">
+                        —— 永远支持你的人<br>
+                        <span id="currentDate"></span>
+                    </p>
+                </div>
+                <button class="open-capsule-btn" onclick="sealTimeCapsule()" id="capsuleBtn">
+                    <i class="fas fa-seedling"></i> 封存时间胶囊
+                </button>
+            </div>
+
+            <!-- 隐藏的彩蛋 -->
+            <div class="hidden-egg slide-up">
+                <p class="egg-hint">还有一个隐藏的小彩蛋...</p>
+                <button class="egg-button" onclick="toggleEgg()">
+                    <i class="fas fa-egg"></i> 点击寻找彩蛋
+                </button>
+                <div class="egg-content" id="eggContent">
+                    <p><strong>🎉 恭喜你找到了隐藏彩蛋！ 🎉</strong></p>
+                    <p>这个彩蛋想告诉你：</p>
+                    <p>无论生活中遇到什么困难，都要记得微笑。</p>
+                    <p>你是一个特别的人，值得被珍惜和爱护。</p>
+                    <p>愿你的每一天都充满阳光和欢笑！</p>
+                    <div style="margin-top: 15px; font-size: 0.9rem; color: var(--text-light);">
+                        <i class="fas fa-key"></i> 彩蛋密码：<code>土鸡蛋最可爱</code>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-gift"></i> 关于惊喜页面</h3>
+                <p>这个页面专为 <span class="highlight-name">土鸡蛋</span> 准备，每一份惊喜都藏着我的心意。</p>
+            </div>
+            <div class="footer-section">
+                <h3><i class="fas fa-link"></i> 快速链接</h3>
+                <div class="footer-links">
+                    <a href="index.html"><i class="fas fa-home"></i> 主页</a>
+                    <a href="moments.html"><i class="fas fa-heart"></i> 回忆</a>
+                    <a href="photos.html"><i class="fas fa-images"></i> 照片墙</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3><i class="fas fa-info-circle"></i> 页面信息</h3>
+                <p>创建时间：2025年元旦</p>
+                <p>最后更新：<span id="pageUpdateDate"></span></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 元旦特别版 | 专为 <span class="highlight-name">王雅尼（土鸡蛋）</span> 制作</p>
+            <p class="footer-note">
+                <i class="fas fa-heart"></i> 愿这份惊喜带给你快乐 <i class="fas fa-heart"></i>
+            </p>
+        </div>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- 音频元素 -->
+    <audio id="surpriseMusic" loop>
+        <source src="https://assets.codepen.io/1468070/Love.mp3" type="audio/mpeg">
+        <source src="https://assets.codepen.io/1468070/Love.ogg" type="audio/ogg">
+        您的浏览器不支持音频元素。
+    </audio>
+
+    <!-- 加载脚本 -->
+    <script src="js/main.js"></script>
+    <script>
+        // 惊喜页面特有功能
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('惊喜页面加载完成！');
+            
+            // 初始化魔法粒子
+            initMagicParticles();
+            
+            // 初始化返回顶部按钮
+            initBackToTop();
+            
+            // 更新页面日期
+            updatePageDates();
+            
+            // 初始化导航
+            initNavigation();
+            
+            // 添加页面加载动画
+            setTimeout(() => {
+                document.querySelectorAll('.slide-up').forEach(element => {
+                    element.style.animationPlayState = 'running';
+                });
+            }, 300);
+            
+            // 检查已揭开的惊喜
+            checkRevealedSurprises();
+        });
+        
+        // 初始化魔法粒子
+        function initMagicParticles() {
+            const container = document.getElementById('magicParticles');
+            if (!container) return;
+            
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.top = Math.random() * 100 + 'vh';
+                particle.style.width = (Math.random() * 6 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                
+                container.appendChild(particle);
+            }
+        }
+        
+        // 更新页面日期
+        function updatePageDates() {
+            const now = new Date();
+            const dateString = now.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long'
+            });
+            
+            // 更新当前日期
+            const currentDateElement = document.getElementById('currentDate');
+            if (currentDateElement) {
+                currentDateElement.textContent = dateString;
+            }
+            
+            // 更新页面更新日期
+            const pageUpdateDateElement = document.getElementById('pageUpdateDate');
+            if (pageUpdateDateElement) {
+                pageUpdateDateElement.textContent = dateString;
+            }
+        }
+        
+        // 检查已揭开的惊喜
+        function checkRevealedSurprises() {
+            const revealed = JSON.parse(localStorage.getItem('revealedSurprises')) || [];
+            
+            revealed.forEach(index => {
+                const card = document.querySelector(`.surprise-card[data-index="${index}"]`);
+                if (card) {
+                    revealCard(card, false); // 不显示动画
+                }
+            });
+        }
+        
+        // 揭开单个惊喜
+        function revealSurprise(index) {
+            const card = document.querySelector(`.surprise-card[data-index="${index}"]`);
+            if (!card) return;
+            
+            // 标记为已揭开
+            card.classList.add('revealed');
+            
+            // 保存到本地存储
+            const revealed = JSON.parse(localStorage.getItem('revealedSurprises')) || [];
+            if (!revealed.includes(index)) {
+                revealed.push(index);
+                localStorage.setItem('revealedSurprises', JSON.stringify(revealed));
+            }
+            
+            // 显示内容
+            revealCard(card, true);
+            
+            // 播放音效（模拟）
+            playRevealSound();
+            
+            // 显示通知
+            showNotification(`惊喜 ${index} 已揭开！`);
+        }
+        
+        // 揭开卡片内容
+        function revealCard(card, animate = true) {
+            const index = card.getAttribute('data-index');
+            const content = card.querySelector(`#surprise${index}`);
+            const hint = card.querySelector('.card-hint');
+            const button = card.querySelector('.reveal-btn');
+            
+            if (content && hint && button) {
+                // 隐藏提示和按钮
+                hint.style.display = 'none';
+                button.style.display = 'none';
+                
+                // 显示内容
+                content.style.display = 'block';
+                
+                // 添加动画效果
+                if (animate) {
+                    content.style.animation = 'fadeIn 0.8s ease forwards';
+                }
+            }
+        }
+        
+        // 揭开所有惊喜
+        function revealAllSurprises() {
+            if (!confirm('确定要一键揭开所有惊喜吗？建议一个一个慢慢探索哦！')) {
+                return;
+            }
+            
+            const cards = document.querySelectorAll('.surprise-card');
+            const revealed = [];
+            
+            cards.forEach((card, index) => {
+                const cardIndex = card.getAttribute('data-index');
+                revealCard(card, true);
+                card.classList.add('revealed');
+                revealed.push(parseInt(cardIndex));
+            });
+            
+            // 保存到本地存储
+            localStorage.setItem('revealedSurprises', JSON.stringify(revealed));
+            
+            // 显示额外内容
+            showExtraConfession();
+            document.getElementById('eggContent').style.display = 'block';
+            
+            // 播放音乐
+            playSurpriseMusic();
+            
+            showNotification('所有惊喜已揭开！愿你有个美好的体验！');
+        }
+        
+        // 播放惊喜音乐
+        function playSurpriseMusic() {
+            const music = document.getElementById('surpriseMusic');
+            if (!music) return;
+            
+            music.volume = 0.5;
+            
+            if (music.paused) {
+                music.play().then(() => {
+                    showNotification('惊喜音乐开始播放！');
+                }).catch(e => {
+                    console.log('播放失败:', e);
+                    showNotification('音乐播放失败，请检查浏览器设置');
+                });
+            } else {
+                music.pause();
+                showNotification('音乐已暂停');
+            }
+        }
+        
+        // 播放揭开音效（模拟）
+        function playRevealSound() {
+            // 创建一个简单的音效
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                console.log('音效播放失败:', e);
+            }
+        }
+        
+        // 显示额外表白内容
+        function showExtraConfession() {
+            const extraContent = document.getElementById('extraConfession');
+            if (extraContent) {
+                extraContent.style.display = 'block';
+                extraContent.style.animation = 'fadeIn 0.8s ease forwards';
+            }
+        }
+        
+        // 封存时间胶囊
+        function sealTimeCapsule() {
+            const button = document.getElementById('capsuleBtn');
+            const content = document.getElementById('capsuleContent');
+            
+            if (button && content) {
+                button.innerHTML = '<i class="fas fa-check-circle"></i> 时间胶囊已封存';
+                button.style.background = 'linear-gradient(135deg, #2ecc71, #27ae60)';
+                button.onclick = null;
+                button.style.cursor = 'default';
+                
+                content.innerHTML = `
+                    <div style="text-align: center; padding: 20px;">
+                        <i class="fas fa-lock" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 20px;"></i>
+                        <h3 style="color: var(--primary-color); margin-bottom: 15px;">时间胶囊已封存</h3>
+                        <p>这份心意已安全保存，将在未来的某一天重新开启。</p>
+                        <p style="margin-top: 15px; color: var(--text-light); font-size: 0.9rem;">
+                            封存时间：${new Date().toLocaleString('zh-CN')}
+                        </p>
+                    </div>
+                `;
+                
+                // 保存到本地存储
+                localStorage.setItem('timeCapsuleSealed', 'true');
+                localStorage.setItem('capsuleSealDate', new Date().toISOString());
+                
+                showNotification('时间胶囊已成功封存！');
+            }
+        }
+        
+        // 切换彩蛋显示
+        function toggleEgg() {
+            const eggContent = document.getElementById('eggContent');
+            if (eggContent) {
+                if (eggContent.style.display === 'block') {
+                    eggContent.style.display = 'none';
+                } else {
+                    eggContent.style.display = 'block';
+                    eggContent.style.animation = 'fadeIn 0.5s ease forwards';
+                    
+                    // 保存已发现彩蛋
+                    localStorage.setItem('eggFound', 'true');
+                    
+                    showNotification('🎉 恭喜你找到了隐藏彩蛋！');
+                }
+            }
+        }
+        
+        // 显示通知
+        function showNotification(message, duration = 3000) {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <i class="fas fa-gift"></i>
+                <span>${message}</span>
+            `;
+            
+            // 样式
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--card-bg);
+                color: var(--text-color);
+                padding: 15px 25px;
+                border-radius: var(--border-radius-md);
+                box-shadow: var(--shadow-heavy);
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                z-index: 10000;
+                animation: slideInRight 0.3s ease, fadeOut 0.3s ease ${duration}ms forwards;
+                border-left: 4px solid var(--surprise-pink);
+            `;
+            
+            // 添加到页面
+            document.body.appendChild(notification);
+            
+            // 自动移除
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, duration + 300);
+        }
+        
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes fadeOut {
+                to {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
